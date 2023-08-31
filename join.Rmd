@@ -1,27 +1,14 @@
-```{r}
-
-install.packages("rgdal")
-```
-```{r}
-install.packages(c("sf", "tmap", "tmaptools", "RSQLite", "tidyverse"), 
-                 repos = "https://www.stats.bris.ac.uk/R/")
-```
-```{r}
-
-```
 
 ```{r}
 library(sf)
 library(tidyverse)
 library(dplyr)
 library(ggplot2)
-library(rgdal)
-library(janitor)
-# change this to your file path!!!
 
 ```
 ```{r}
-boro <- st_read("//ad.ucl.ac.uk/homea/ucfnina/Downloads/dissertation/statistical-gis-boundaries-london/ESRI/London_Borough_Excluding_MHW.shp")
+# please change this to your file path
+boro <- st_read("//ad.ucl.ac.uk/homea/ucfnina/Downloads/dissertation/statistical-gis-boundaries-london/ESRI/London_Borough_Excluding_MHW.shp")%>%st_transform(., 27700)
 
 boro_sf <- st_as_sf(boro)
 ```
@@ -31,15 +18,15 @@ lsoa <- st_read("//ad.ucl.ac.uk/homea/ucfnina/Downloads/dissertation/statistical
 
 lsoa_sf <- st_as_sf(lsoa)
 
-```{r}
-
 ```
 
 
 
 ```{r}
-zoopla <-  read_csv("//ad.ucl.ac.uk/homea/ucfnina/Downloads/dissertation/Zoopla_6_0814.csv")  
+zoopla <-  read_csv("//ad.ucl.ac.uk/homea/ucfnina/Downloads/dissertation/Zoopla_6_0822.csv")  
 ```
+
+
 ```{r}
 count_cloumns1 <- sapply(zoopla,function(col)length(na.omit(col)))
 
@@ -49,25 +36,31 @@ print(count_cloumns1)
 
 
 ```{r}
-zoopla_pionts<- zoopla%>%
-  st_as_sf(., coords = c("lon", "lat"), 
-                   crs = 4326) %>%
-    st_transform(., 27700)
-```
-```{r}
-zoopla_join <-st_join(zoopla_pionts,lsoa_sf,join=st_within)
+zoopla_pionts <- zoopla %>%
+  st_as_sf(., coords = c("lon", "lat"), crs = 4326) %>%
+  st_transform(., 27700)
 
+# Perform spatial join using st_intersects
+zoopla_join <- st_join(zoopla_pionts, lsoa, join = st_intersects)
+
+# Filter out points that are not within any polygon
+zoopla_join <- zoopla_join[!is.na(zoopla_join$LAD11NM), ]
 ```
+
+
+
 ```{r}
-price<-zoopla_join %>%
-  group_by(LAD11NM)%>%
-  summarise(boro_price=mean(price_last,na.rm=TRUE),
-            pre_price = mean(ifelse(pre == 1,price_last,NA),na.rm=TRUE),
-            during_price = mean(ifelse(during == 1,price_last,NA),na.rm=TRUE),
-            post_price = mean(ifelse(post == 1,price_last,NA),na.rm=TRUE),
-            post1_price = mean(ifelse(post1 == 1,price_last,NA),na.rm=TRUE),
-            post2_price = mean(ifelse(post2 == 1,price_last,NA),na.rm=TRUE),
-            )
+# Summarize the spatial join result without modifying geometry
+price <- zoopla_join %>%
+  group_by(LAD11NM) %>%
+  summarise(boro_price = mean(price_last, na.rm = TRUE),
+            pre_price = mean(ifelse(pre == 1, price_last, NA), na.rm = TRUE),
+            during_price = mean(ifelse(during == 1, price_last, NA), na.rm = TRUE),
+            post_price = mean(ifelse(post == 1, price_last, NA), na.rm = TRUE),
+            post1_price = mean(ifelse(post1 == 1, price_last, NA), na.rm = TRUE),
+            post2_price = mean(ifelse(post2 == 1, price_last, NA), na.rm = TRUE))
+
+
 ```
 
 ```{r}
@@ -108,13 +101,9 @@ price_lsoa <- st_drop_geometry(price_lsoa)
 ```
 
 ```{r}
-count_cloumns2 <- sapply(zoopla_pionts,function(col)length(na.omit(col)))
+count_cloumns2 <- sapply(zoopla_join,function(col)length(na.omit(col)))
 
 print(count_cloumns2)
-```
-
-```{r}
-
 ```
 
 
@@ -128,18 +117,6 @@ boro_price_plot <- boro_sf %>%
         by.y="LAD11NM")
 ```
 
-
-```{r}
-library(tmap)
-tmap_mode("plot")
-# change the fill to your column name if different
-diff_pre_during <- tm_shape(boro_price_plot) +
-  tm_borders() +
-  tm_fill(c("diff_pre_during", "diff_during_post", "diff_during_post1", "diff_post1_post2"), 
-          title = "Legend Title")
-
-
-```
 
 
 ```{r}
