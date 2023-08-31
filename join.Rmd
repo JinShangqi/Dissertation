@@ -59,8 +59,6 @@ price <- zoopla_join %>%
             post_price = mean(ifelse(post == 1, price_last, NA), na.rm = TRUE),
             post1_price = mean(ifelse(post1 == 1, price_last, NA), na.rm = TRUE),
             post2_price = mean(ifelse(post2 == 1, price_last, NA), na.rm = TRUE))
-
-
 ```
 
 ```{r}
