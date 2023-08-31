@@ -1,0 +1,290 @@
+```{r}
+library(utils)
+library(sp)
+library(rgdal)
+library(sf)
+library(dplyr)
+```
+```{r}
+### please remember to change the folder path
+boro <- st_read("//ad.ucl.ac.uk/homea/ucfnina/Downloads/dissertation/statistical-gis-boundaries-london/ESRI/London_Borough_Excluding_MHW.shp")%>%
+  st_transform(., 27700)
+
+boro_sf <- st_as_sf(boro)
+
+```
+## 2019
+```{r}
+### 2019
+
+merged_data <- data.frame()
+folder_path <- "D:/LONDON/2019"
+file_list <- list.files(folder_path, full.names = TRUE)
+
+file_list <- list.files(folder_path, full.names = TRUE)
+all_data <- list()
+
+for (file_name in file_list) {
+  data <- read.csv(file_name)
+  all_data <- c(all_data, list(data))
+}
+
+merged_data_19 <- do.call(rbind, all_data)
+
+
+
+```
+```{r}
+
+selected_columns <- c("property_id",
+  "property_type",
+  "lon",
+  "lat",
+  "price_last",
+  "end_date",
+  "start_date",
+  "num_bed_last",
+  "num_bath_max",
+  "description")
+merged_data_19_2 <- merged_data_19[selected_columns]
+
+
+```
+
+
+```{r}
+zoopla_points_19 <- merged_data_19_2 %>%
+  st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%
+  st_transform(., 27700)
+
+# Perform spatial join using st_intersects
+zoopla_19 <- st_join(zoopla_points_19, boro_sf, join = st_intersects)
+
+zoopla_19 <- zoopla_19[!is.na(zoopla_19$GSS_CODE), ]
+
+zoopla_19$lon <- st_coordinates(zoopla_19)[, "X"]
+zoopla_19$lat <- st_coordinates(zoopla_19)[, "Y"]
+
+```
+
+
+```{r}
+selected_columns <- c("property_id",
+  "property_type",
+  "lon",
+  "lat",
+  "price_last",
+  "end_date",
+  "start_date",
+  "num_bed_last",
+  "num_bath_max",
+  "description")
+
+zoopla_19_2 <- zoopla_19[selected_columns]
+
+```
+
+```{r}
+zoopla_19_2 <- zoopla_19_2 %>%
+  st_set_geometry(NULL)
+```
+
+
+```{r}
+output_file <- "//ad.ucl.ac.uk/homea/ucfnina/Downloads/dissertation/2019.csv"
+write.csv(zoopla_19_2, file = output_file, row.names = FALSE)
+```
+
+
+
+## 2020
+```{r}
+### 2020
+
+merged_data <- data.frame()
+folder_pa20 <- "D:/LONDON/2020"
+
+file_list <- list.files(folder_pa20, full.names = TRUE)
+all_data <- list()
+
+for (file_name in file_list) {
+  data <- read.csv(file_name)
+  all_data <- c(all_data, list(data))
+}
+
+merged_data_20 <- do.call(rbind, all_data)
+
+selected_columns <- c("property_id",
+  "property_type",
+  "lon",
+  "lat",
+  "price_last",
+  "end_date",
+  "start_date",
+  "num_bed_last",
+  "num_bath_max",
+  "description")
+merged_data_20_2 <- merged_data_20[selected_columns]
+
+zoopla_points_20 <- merged_data_20_2 %>%
+  st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%
+  st_transform(., 27700)
+
+# Perform spatial join using st_intersects
+zoopla_20 <- st_join(zoopla_points_20, boro_sf, join = st_intersects)
+
+zoopla_20 <- zoopla_20[!is.na(zoopla_20$GSS_CODE), ]
+
+zoopla_20$lon <- st_coordinates(zoopla_20)[, "X"]
+zoopla_20$lat <- st_coordinates(zoopla_20)[, "Y"]
+
+selected_columns <- c("property_id",
+  "property_type",
+  "lon",
+  "lat",
+  "price_last",
+  "end_date",
+  "start_date",
+  "num_bed_last",
+  "num_bath_max",
+  "description")
+
+zoopla_20_2 <- zoopla_20[selected_columns]
+
+zoopla_20_2 <- zoopla_20_2 %>%
+  st_set_geometry(NULL)
+
+output_file <- "//ad.ucl.ac.uk/homea/ucfnina/Downloads/dissertation/2020.csv"
+write.csv(zoopla_20_2, file = output_file, row.names = FALSE)
+
+```
+
+```{r}
+### 2021
+
+merged_data <- data.frame()
+folder_pa21 <- "D:/LONDON/2021"
+
+file_list <- list.files(folder_pa21, full.names = TRUE)
+all_data <- list()
+
+for (file_name in file_list) {
+  data <- read.csv(file_name)
+  all_data <- c(all_data, list(data))
+}
+
+merged_data_21 <- do.call(rbind, all_data)
+
+selected_columns <- c("property_id",
+  "property_type",
+  "lon",
+  "lat",
+  "price_last",
+  "end_date",
+  "start_date",
+  "num_bed_last",
+  "num_bath_max",
+  "description")
+merged_data_21_2 <- merged_data_21[selected_columns]
+
+zoopla_points_21 <- merged_data_21_2 %>%
+  st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%
+  st_transform(., 27700)
+
+# Perform spatial join using st_intersects
+zoopla_21 <- st_join(zoopla_points_21, boro_sf, join = st_intersects)
+
+zoopla_21 <- zoopla_21[!is.na(zoopla_21$GSS_CODE), ]
+
+zoopla_21$lon <- st_coordinates(zoopla_21)[, "X"]
+zoopla_21$lat <- st_coordinates(zoopla_21)[, "Y"]
+
+selected_columns <- c("property_id",
+  "property_type",
+  "lon",
+  "lat",
+  "price_last",
+  "end_date",
+  "start_date",
+  "num_bed_last",
+  "num_bath_max",
+  "description")
+
+zoopla_21_2 <- zoopla_21[selected_columns]
+
+zoopla_21_2 <- zoopla_21_2 %>%
+  st_set_geometry(NULL)
+
+output_file <- "//ad.ucl.ac.uk/homea/ucfnina/Downloads/dissertation/2021.csv"
+write.csv(zoopla_21_2, file = output_file, row.names = FALSE)
+```
+
+```{r}
+### 2022
+
+merged_data <- data.frame()
+folder_pa22 <- "D:/LONDON/2022"
+
+file_list <- list.files(folder_pa22, full.names = TRUE)
+all_data <- list()
+
+for (file_name in file_list) {
+  data <- read.csv(file_name)
+  all_data <- c(all_data, list(data))
+}
+
+merged_data_22 <- do.call(rbind, all_data)
+
+selected_columns <- c("property_id",
+  "property_type",
+  "lon",
+  "lat",
+  "price_last",
+  "end_date",
+  "start_date",
+  "num_bed_last",
+  "num_bath_max",
+  "description")
+merged_data_22_2 <- merged_data_22[selected_columns]
+
+zoopla_points_22 <- merged_data_22_2 %>%
+  st_as_sf(coords = c("lon", "lat"), crs = 4326) %>%
+  st_transform(., 27700)
+
+# Perform spatial join using st_intersects
+zoopla_22 <- st_join(zoopla_points_22, boro_sf, join = st_intersects)
+
+zoopla_22 <- zoopla_22[!is.na(zoopla_22$GSS_CODE), ]
+
+zoopla_22$lon <- st_coordinates(zoopla_22)[, "X"]
+zoopla_22$lat <- st_coordinates(zoopla_22)[, "Y"]
+
+selected_columns <- c("property_id",
+  "property_type",
+  "lon",
+  "lat",
+  "price_last",
+  "end_date",
+  "start_date",
+  "num_bed_last",
+  "num_bath_max",
+  "description")
+
+zoopla_22_2 <- zoopla_22[selected_columns]
+
+zoopla_22_2 <- zoopla_22_2 %>%
+  st_set_geometry(NULL)
+
+output_file <- "//ad.ucl.ac.uk/homea/ucfnina/Downloads/dissertation/2022.csv"
+write.csv(zoopla_22_2, file = output_file, row.names = FALSE)
+```
+
+
+
+
+
+
+
+
+
+
