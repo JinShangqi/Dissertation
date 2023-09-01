@@ -1,7 +1,7 @@
 # Dissertation
 
-see concat London Zoopla data in merge.Rmd
+Please refer to the 'merge.Rmd' file for the concat of London's Zoopla data related to London.
 
-see the main analysis and plot in zoopla_anaylsis.ipynb
+Please refer to the 'zoopla_analysis.ipynb' file for the main analysis and plots.
 
-see data join in join.Rmd
+Please refer to the 'join.Rmd' file for data spatial join.
