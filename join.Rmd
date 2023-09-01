@@ -13,7 +13,7 @@ boro <- st_read("//ad.ucl.ac.uk/homea/ucfnina/Downloads/dissertation/statistical
 boro_sf <- st_as_sf(boro)
 ```
 ```{r}
-lsoa <- st_read("//ad.ucl.ac.uk/homea/ucfnina/Downloads/dissertation/statistical-gis-boundaries-london/ESRI/LSOA_2011_London_gen_MHW.shp")%>%
+lsoa <- st_read("//ad.ucl.ac.uk/homea/ucfnina/Downloads/dissertation/statistical-gis-boundaries-london/ESRI/london_lsoa_shp/LSOA_2011_London_gen_MHW.shp")%>%
     st_transform(., 27700)
 
 lsoa_sf <- st_as_sf(lsoa)
@@ -37,11 +37,10 @@ print(count_cloumns1)
 
 ```{r}
 zoopla_pionts <- zoopla %>%
-  st_as_sf(., coords = c("lon", "lat"), crs = 4326) %>%
-  st_transform(., 27700)
+  st_as_sf(., coords = c("lon", "lat"), crs = 27700) 
 
 # Perform spatial join using st_intersects
-zoopla_join <- st_join(zoopla_pionts, lsoa, join = st_intersects)
+zoopla_join <- st_join(zoopla_pionts, lsoa , join = st_intersects)
 
 # Filter out points that are not within any polygon
 zoopla_join <- zoopla_join[!is.na(zoopla_join$LAD11NM), ]
@@ -59,6 +58,8 @@ price <- zoopla_join %>%
             post_price = mean(ifelse(post == 1, price_last, NA), na.rm = TRUE),
             post1_price = mean(ifelse(post1 == 1, price_last, NA), na.rm = TRUE),
             post2_price = mean(ifelse(post2 == 1, price_last, NA), na.rm = TRUE))
+
+
 ```
 
 ```{r}
@@ -103,18 +104,6 @@ count_cloumns2 <- sapply(zoopla_join,function(col)length(na.omit(col)))
 
 print(count_cloumns2)
 ```
-
-
-
-
-```{r}
-boro_price_plot <- boro_sf %>%
-  merge(.,
-        price,
-        by.x="NAME", 
-        by.y="LAD11NM")
-```
-
 
 
 ```{r}
