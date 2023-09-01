@@ -13,6 +13,9 @@ boro <- st_read("//ad.ucl.ac.uk/homea/ucfnina/Downloads/dissertation/statistical
 boro_sf <- st_as_sf(boro)
 
 ```
+
+Before merging, the files from the following folders for each year, namely W, NW, N, E, SE, SW, WC, EC, HA, UB, TW, KT, SM, CR, BR, DA, RM, EN, IG, were individually consolidated into separate folders named 2019, 2020, 2021, and 2022.
+
 ## 2019
 ```{r}
 ### 2019
